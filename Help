@@ -1,6 +1,6 @@
 Folder Structure :
 
-C:\SECURITYSCANNER
+C:\SecurityScanner
 └───Reports
 
 The .ps1 file goes to C:\SECURITYSCANNER. After the Scan, the reports are sent to C:\SECURITYSCANNER\Reports
