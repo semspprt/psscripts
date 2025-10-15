@@ -1,3 +1,30 @@
+Folder Structure :
+
+C:\SECURITYSCANNER
+└───Reports
+
+The .ps1 file goes to C:\SECURITYSCANNER. After the Scan, the reports are sent to C:\SECURITYSCANNER\Reports
+
+Synthax (Quick Reference Card)
+
+# Quick Start
+.\LocalSecurityAssessment.ps1
+
+# Comprehensive Audit
+.\LocalSecurityAssessment.ps1 -ScanScope Comprehensive -ScanNetworkServices -OpenReport
+
+# Fast Check
+.\LocalSecurityAssessment.ps1 -ScanScope Quick
+
+# Custom Location
+.\LocalSecurityAssessment.ps1 -OutputPath "D:\Scans\" -OpenReport
+
+Exit Code Meanings
+    Exit 0: No critical issues (warnings may exist)
+    Exit 1: Critical security issues found
+    Exit 2: Script execution error
+
+
 Key Security Areas Covered:
     SMB Protocols - SMBv1, SMB signing
     PowerShell - v2, execution policy, logging
