@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Comprehensive Local Security Assessment for Windows Servers
 .DESCRIPTION
@@ -6,7 +6,8 @@
     No remote access required - runs directly on the target server
 .NOTES
     Author: EMMANUEL S. M. / Cybersecurity Specialist
-    Version: 1.0 - Local Comprehensive Assessment
+    For any improvement or comment : semspprt=#@#=proton.me
+    Version: 1.1 (2025-10-15) - Local Comprehensive Assessment
 #>
 
 param(
@@ -105,7 +106,7 @@ function Test-SMBConfig {
     try {
         $SMBv1 = Get-WindowsOptionalFeature -Online -FeatureName "SMB1Protocol" -ErrorAction Stop
         if ($SMBv1.State -eq "Enabled") {
-            Write-SecurityLog "  ✗ SMBv1 is ENABLED - Critical Risk!" "CRITICAL"
+            Write-SecurityLog "SMBv1 is ENABLED - Critical Risk!" "CRITICAL"
             $Findings += @{
                 Title = "SMBv1 Protocol"
                 Status = "Enabled"
@@ -116,7 +117,7 @@ function Test-SMBConfig {
                 Reference = "https://support.microsoft.com/en-us/help/2696547"
             }
         } else {
-            Write-SecurityLog "  ✓ SMBv1 is disabled" "SUCCESS"
+            Write-SecurityLog "SMBv1 is disabled" "SUCCESS"
             $Findings += @{
                 Title = "SMBv1 Protocol"
                 Status = "Disabled"
@@ -126,14 +127,14 @@ function Test-SMBConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not determine SMBv1 status" "WARNING"
+        Write-SecurityLog "Could not determine SMBv1 status" "WARNING"
     }
     
     # Check SMB Signing
     try {
         $SMBSigning = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters" -Name "requiresecuritysignature" -ErrorAction SilentlyContinue
         if ($SMBSigning.requiresecuritysignature -ne 1) {
-            Write-SecurityLog "  ! SMB Signing not required" "WARNING"
+            Write-SecurityLog "SMB Signing not required" "WARNING"
             $Findings += @{
                 Title = "SMB Signing Enforcement"
                 Status = "Not Enforced"
@@ -142,7 +143,7 @@ function Test-SMBConfig {
                 Recommendation = "Enable SMB signing via GPO: Computer Configuration > Policies > Windows Settings > Security Settings > Local Policies > Security Options > Microsoft network server: Digitally sign communications (always)"
             }
         } else {
-            Write-SecurityLog "  ✓ SMB Signing is enforced" "SUCCESS"
+            Write-SecurityLog "  SMB Signing is enforced" "SUCCESS"
             $Findings += @{
                 Title = "SMB Signing Enforcement"
                 Status = "Enforced"
@@ -152,7 +153,7 @@ function Test-SMBConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check SMB signing" "WARNING"
+        Write-SecurityLog "  Could not check SMB signing" "WARNING"
     }
     
     return $Findings
@@ -168,7 +169,7 @@ function Test-PowerShellSecurity {
     try {
         $PSv2 = Get-WindowsOptionalFeature -Online -FeatureName "MicrosoftWindowsPowerShellV2" -ErrorAction Stop
         if ($PSv2.State -eq "Enabled") {
-            Write-SecurityLog "  ✗ PowerShell v2 is ENABLED - Critical Risk!" "CRITICAL"
+            Write-SecurityLog "PowerShell v2 is ENABLED - Critical Risk!" "CRITICAL"
             $Findings += @{
                 Title = "PowerShell Version 2.0"
                 Status = "Enabled"
@@ -178,7 +179,7 @@ function Test-PowerShellSecurity {
                 Reference = "CIS Benchmark 18.9.84.1"
             }
         } else {
-            Write-SecurityLog "  ✓ PowerShell v2 is disabled" "SUCCESS"
+            Write-SecurityLog "  PowerShell v2 is disabled" "SUCCESS"
             $Findings += @{
                 Title = "PowerShell Version 2.0"
                 Status = "Disabled"
@@ -188,14 +189,14 @@ function Test-PowerShellSecurity {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not determine PowerShell v2 status" "WARNING"
+        Write-SecurityLog "Could not determine PowerShell v2 status" "WARNING"
     }
     
     # Check PowerShell Execution Policy
     try {
         $ExecutionPolicy = Get-ExecutionPolicy
         if ($ExecutionPolicy -eq "Unrestricted") {
-            Write-SecurityLog "  ✗ PowerShell Execution Policy is Unrestricted" "CRITICAL"
+            Write-SecurityLog "PowerShell Execution Policy is Unrestricted" "CRITICAL"
             $Findings += @{
                 Title = "PowerShell Execution Policy"
                 Status = "Unrestricted"
@@ -204,7 +205,7 @@ function Test-PowerShellSecurity {
                 Recommendation = "Set Execution Policy to RemoteSigned: Set-ExecutionPolicy RemoteSigned"
             }
         } elseif ($ExecutionPolicy -eq "Bypass") {
-            Write-SecurityLog "  ✗ PowerShell Execution Policy is Bypass" "CRITICAL"
+            Write-SecurityLog "PowerShell Execution Policy is Bypass" "CRITICAL"
             $Findings += @{
                 Title = "PowerShell Execution Policy"
                 Status = "Bypass"
@@ -213,7 +214,7 @@ function Test-PowerShellSecurity {
                 Recommendation = "Set Execution Policy to RemoteSigned: Set-ExecutionPolicy RemoteSigned"
             }
         } else {
-            Write-SecurityLog "  ✓ PowerShell Execution Policy is $ExecutionPolicy" "SUCCESS"
+            Write-SecurityLog "PowerShell Execution Policy is $ExecutionPolicy" "SUCCESS"
             $Findings += @{
                 Title = "PowerShell Execution Policy"
                 Status = $ExecutionPolicy
@@ -223,14 +224,14 @@ function Test-PowerShellSecurity {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check PowerShell Execution Policy" "WARNING"
+        Write-SecurityLog "  Could not check PowerShell Execution Policy" "WARNING"
     }
     
     # Check PowerShell Transcription/Logging
     try {
         $Transcript = Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "EnableTranscripting" -ErrorAction SilentlyContinue
         if ($Transcript.EnableTranscripting -ne 1) {
-            Write-SecurityLog "  ! PowerShell transcription not enabled" "WARNING"
+            Write-SecurityLog "PowerShell transcription not enabled" "WARNING"
             $Findings += @{
                 Title = "PowerShell Transcription"
                 Status = "Disabled"
@@ -239,7 +240,7 @@ function Test-PowerShellSecurity {
                 Recommendation = "Enable PowerShell transcription via GPO for security auditing."
             }
         } else {
-            Write-SecurityLog "  ✓ PowerShell transcription is enabled" "SUCCESS"
+            Write-SecurityLog "  PowerShell transcription is enabled" "SUCCESS"
         }
     } catch {
         # Transcription not configured is common
@@ -258,7 +259,7 @@ function Test-NameResolution {
     try {
         $LLMNR = Get-ItemProperty "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -ErrorAction SilentlyContinue
         if ($null -eq $LLMNR -or $LLMNR.EnableMulticast -ne 0) {
-            Write-SecurityLog "  ! LLMNR is likely ENABLED" "WARNING"
+            Write-SecurityLog "LLMNR is likely ENABLED" "WARNING"
             $Findings += @{
                 Title = "LLMNR (Link-Local Multicast Name Resolution)"
                 Status = "Likely Enabled"
@@ -268,7 +269,7 @@ function Test-NameResolution {
                 Reference = "CIS Benchmark 18.4.4"
             }
         } else {
-            Write-SecurityLog "  ✓ LLMNR is disabled via policy" "SUCCESS"
+            Write-SecurityLog "LLMNR is disabled via policy" "SUCCESS"
             $Findings += @{
                 Title = "LLMNR (Link-Local Multicast Name Resolution)"
                 Status = "Disabled"
@@ -278,7 +279,7 @@ function Test-NameResolution {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not determine LLMNR status" "WARNING"
+        Write-SecurityLog "Could not determine LLMNR status" "WARNING"
     }
     
     # Check NetBIOS
@@ -294,7 +295,7 @@ function Test-NameResolution {
         }
         
         if ($EnabledAdapters.Count -gt 0) {
-            Write-SecurityLog "  ! NetBIOS enabled on $($EnabledAdapters.Count) adapter(s)" "WARNING"
+            Write-SecurityLog "NetBIOS enabled on $($EnabledAdapters.Count) adapter(s)" "WARNING"
             $Findings += @{
                 Title = "NetBIOS over TCP/IP"
                 Status = "Enabled"
@@ -304,7 +305,7 @@ function Test-NameResolution {
                 Reference = "CIS Benchmark 18.4.7"
             }
         } else {
-            Write-SecurityLog "  ✓ NetBIOS is disabled on all adapters" "SUCCESS"
+            Write-SecurityLog "NetBIOS is disabled on all adapters" "SUCCESS"
             $Findings += @{
                 Title = "NetBIOS over TCP/IP"
                 Status = "Disabled"
@@ -314,7 +315,7 @@ function Test-NameResolution {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check NetBIOS settings" "WARNING"
+        Write-SecurityLog "Could not check NetBIOS settings" "WARNING"
     }
     
     return $Findings
@@ -342,7 +343,7 @@ function Test-TLSConfig {
             $IsEnabled = ($ServerEnabled.Enabled -ne 0) -or ($ClientEnabled.Enabled -ne 0)
             
             if ($IsEnabled) {
-                Write-SecurityLog "  ✗ $($TLS.Version) is ENABLED" "CRITICAL"
+                Write-SecurityLog "$($TLS.Version) is ENABLED" "CRITICAL"
                 $RiskLevel = if ($TLS.Version -like "SSL*" -or $TLS.Version -eq "TLS 1.0") { "Critical" } else { "Warning" }
                 
                 $Findings += @{
@@ -354,7 +355,7 @@ function Test-TLSConfig {
                     CVE = if ($TLS.Version -eq "SSL 3.0") { "POODLE" } elseif ($TLS.Version -eq "TLS 1.0") { "BEAST" } else { "Various" }
                 }
             } else {
-                Write-SecurityLog "  ✓ $($TLS.Version) is disabled" "SUCCESS"
+                Write-SecurityLog "$($TLS.Version) is disabled" "SUCCESS"
                 $Findings += @{
                     Title = "$($TLS.Version) Protocol"
                     Status = "Disabled"
@@ -364,7 +365,7 @@ function Test-TLSConfig {
                 }
             }
         } catch {
-            Write-SecurityLog "  ! Could not check $($TLS.Version) status" "WARNING"
+            Write-SecurityLog "Could not check $($TLS.Version) status" "WARNING"
         }
     }
     
@@ -385,7 +386,7 @@ function Test-TLSConfig {
         }
         
         if ($EnabledCiphers.Count -gt 0) {
-            Write-SecurityLog "  ! Weak cipher suites enabled: $($EnabledCiphers -join ', ')" "WARNING"
+            Write-SecurityLog "Weak cipher suites enabled: $($EnabledCiphers -join ', ')" "WARNING"
             $Findings += @{
                 Title = "Weak Cipher Suites"
                 Status = "Enabled"
@@ -394,10 +395,10 @@ function Test-TLSConfig {
                 Recommendation = "Disable weak cipher suites via Group Policy and prioritize AES-GCM suites."
             }
         } else {
-            Write-SecurityLog "  ✓ No weak cipher suites detected" "SUCCESS"
+            Write-SecurityLog "No weak cipher suites detected" "SUCCESS"
         }
     } catch {
-        Write-SecurityLog "  ! Could not check cipher suites" "WARNING"
+        Write-SecurityLog "Could not check cipher suites" "WARNING"
     }
     
     return $Findings
@@ -414,7 +415,7 @@ function Test-NTLMConfig {
         $NTLMRestrictions = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0" -Name "RestrictSendingNTLMTraffic" -ErrorAction SilentlyContinue
         
         if ($NTLMRestrictions.RestrictSendingNTLMTraffic -eq 2) {
-            Write-SecurityLog "  ✓ NTLM restrictions are configured" "SUCCESS"
+            Write-SecurityLog "NTLM restrictions are configured" "SUCCESS"
             $Findings += @{
                 Title = "NTLM Audit/Restrictions"
                 Status = "Restricted"
@@ -423,7 +424,7 @@ function Test-NTLMConfig {
                 Recommendation = "Consider migrating to Kerberos authentication where possible."
             }
         } else {
-            Write-SecurityLog "  ! NTLM restrictions not configured" "WARNING"
+            Write-SecurityLog "NTLM restrictions not configured" "WARNING"
             $Findings += @{
                 Title = "NTLM Audit/Restrictions"
                 Status = "Unrestricted"
@@ -434,7 +435,7 @@ function Test-NTLMConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not determine NTLM restriction settings" "WARNING"
+        Write-SecurityLog "Could not determine NTLM restriction settings" "WARNING"
     }
     
     # Check LM Compatibility Level
@@ -442,7 +443,7 @@ function Test-NTLMConfig {
         $LMLevel = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "LmCompatibilityLevel" -ErrorAction SilentlyContinue
         
         if ($LMLevel.LmCompatibilityLevel -lt 5) {
-            Write-SecurityLog "  ! LM Compatibility Level allows weak authentication" "WARNING"
+            Write-SecurityLog "LM Compatibility Level allows weak authentication" "WARNING"
             $Findings += @{
                 Title = "LAN Manager Authentication Level"
                 Status = "Weak"
@@ -451,7 +452,7 @@ function Test-NTLMConfig {
                 Recommendation = "Set LmCompatibilityLevel to 5 (Send NTLMv2 response only, refuse LM & NTLM)"
             }
         } else {
-            Write-SecurityLog "  ✓ LM Compatibility Level is secure" "SUCCESS"
+            Write-SecurityLog "LM Compatibility Level is secure" "SUCCESS"
             $Findings += @{
                 Title = "LAN Manager Authentication Level"
                 Status = "Secure"
@@ -461,7 +462,7 @@ function Test-NTLMConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check LM Compatibility Level" "WARNING"
+        Write-SecurityLog "Could not check LM Compatibility Level" "WARNING"
     }
     
     return $Findings
@@ -477,7 +478,7 @@ function Test-WindowsServices {
     try {
         $Telnet = Get-WindowsCapability -Online -Name "TelnetClient*" -ErrorAction SilentlyContinue
         if ($Telnet.State -eq "Installed") {
-            Write-SecurityLog "  ✗ Telnet Client is INSTALLED" "CRITICAL"
+            Write-SecurityLog "Telnet Client is INSTALLED" "CRITICAL"
             $Findings += @{
                 Title = "Telnet Client"
                 Status = "Installed"
@@ -486,7 +487,7 @@ function Test-WindowsServices {
                 Recommendation = "Uninstall immediately: Remove-WindowsCapability -Online -Name TelnetClient~~~~0.0.1.0"
             }
         } else {
-            Write-SecurityLog "  ✓ Telnet Client is not installed" "SUCCESS"
+            Write-SecurityLog "Telnet Client is not installed" "SUCCESS"
             $Findings += @{
                 Title = "Telnet Client"
                 Status = "Not Installed"
@@ -496,14 +497,14 @@ function Test-WindowsServices {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check Telnet Client" "WARNING"
+        Write-SecurityLog "Could not check Telnet Client" "WARNING"
     }
     
     # Check FTP Server
     try {
         $FTP = Get-WindowsOptionalFeature -Online -FeatureName "IIS-FTPServer" -ErrorAction SilentlyContinue
         if ($FTP.State -eq "Enabled") {
-            Write-SecurityLog "  ✗ FTP Server is ENABLED" "CRITICAL"
+            Write-SecurityLog "FTP Server is ENABLED" "CRITICAL"
             $Findings += @{
                 Title = "FTP Server"
                 Status = "Enabled"
@@ -512,7 +513,7 @@ function Test-WindowsServices {
                 Recommendation = "Disable FTP server if not required: Disable-WindowsOptionalFeature -Online -FeatureName IIS-FTPServer"
             }
         } else {
-            Write-SecurityLog "  ✓ FTP Server is disabled" "SUCCESS"
+            Write-SecurityLog "FTP Server is disabled" "SUCCESS"
         }
     } catch {
         # FTP not installed is normal
@@ -522,7 +523,7 @@ function Test-WindowsServices {
     try {
         $SNMP = Get-Service -Name "SNMP" -ErrorAction SilentlyContinue
         if ($SNMP.Status -eq "Running") {
-            Write-SecurityLog "  ! SNMP Service is running" "WARNING"
+            Write-SecurityLog "  SNMP Service is running" "WARNING"
             $Findings += @{
                 Title = "SNMP Service"
                 Status = "Running"
@@ -539,7 +540,7 @@ function Test-WindowsServices {
     try {
         $WebClient = Get-Service -Name "WebClient" -ErrorAction SilentlyContinue
         if ($WebClient.Status -eq "Running") {
-            Write-SecurityLog "  ! WebClient service is running" "WARNING"
+            Write-SecurityLog "WebClient service is running" "WARNING"
             $Findings += @{
                 Title = "WebClient Service (WebDAV)"
                 Status = "Running"
@@ -577,7 +578,7 @@ function Test-WinRMConfig {
             }
             
             if ($HTTPListeners.Count -gt 0) {
-                Write-SecurityLog "  ✗ WinRM HTTP listeners active" "CRITICAL"
+                Write-SecurityLog "WinRM HTTP listeners active" "CRITICAL"
                 $Findings += @{
                     Title = "WinRM HTTP Listeners"
                     Status = "Active"
@@ -586,7 +587,7 @@ function Test-WinRMConfig {
                     Recommendation = "Remove HTTP listeners and configure WinRM for HTTPS only: winrm delete winrm/config/listener?Address=*+Transport=HTTP"
                 }
             } else {
-                Write-SecurityLog "  ✓ WinRM configured for HTTPS only" "SUCCESS"
+                Write-SecurityLog "WinRM configured for HTTPS only" "SUCCESS"
                 $Findings += @{
                     Title = "WinRM Configuration"
                     Status = "Secure"
@@ -596,7 +597,7 @@ function Test-WinRMConfig {
                 }
             }
         } else {
-            Write-SecurityLog "  ✓ WinRM service is not running" "SUCCESS"
+            Write-SecurityLog "WinRM service is not running" "SUCCESS"
             $Findings += @{
                 Title = "WinRM Service"
                 Status = "Stopped"
@@ -606,7 +607,7 @@ function Test-WinRMConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check WinRM configuration" "WARNING"
+        Write-SecurityLog "Could not check WinRM configuration" "WARNING"
     }
     
     return $Findings
@@ -622,14 +623,14 @@ function Test-RDPConfig {
         $RDP = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -ErrorAction SilentlyContinue
         
         if ($RDP.fDenyTSConnections -eq 0) {
-            Write-SecurityLog "  ! RDP is enabled" "WARNING"
+            Write-SecurityLog "RDP is enabled" "WARNING"
             
             # Check RDP Security Layer
             $SecurityLayer = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "SecurityLayer" -ErrorAction SilentlyContinue
             $UserAuthentication = Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -ErrorAction SilentlyContinue
             
             if ($SecurityLayer.SecurityLayer -ne 2 -or $UserAuthentication.UserAuthentication -ne 1) {
-                Write-SecurityLog "  ! RDP security settings are weak" "WARNING"
+                Write-SecurityLog "RDP security settings are weak" "WARNING"
                 $Findings += @{
                     Title = "Remote Desktop Protocol (RDP)"
                     Status = "Enabled with weak security"
@@ -638,7 +639,7 @@ function Test-RDPConfig {
                     Recommendation = "Enable NLA: Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name 'UserAuthentication' -Value 1"
                 }
             } else {
-                Write-SecurityLog "  ✓ RDP is enabled with NLA" "SUCCESS"
+                Write-SecurityLog "RDP is enabled with NLA" "SUCCESS"
                 $Findings += @{
                     Title = "Remote Desktop Protocol (RDP)"
                     Status = "Enabled with NLA"
@@ -648,7 +649,7 @@ function Test-RDPConfig {
                 }
             }
         } else {
-            Write-SecurityLog "  ✓ RDP is disabled" "SUCCESS"
+            Write-SecurityLog "RDP is disabled" "SUCCESS"
             $Findings += @{
                 Title = "Remote Desktop Protocol (RDP)"
                 Status = "Disabled"
@@ -658,7 +659,7 @@ function Test-RDPConfig {
             }
         }
     } catch {
-        Write-SecurityLog "  ! Could not check RDP configuration" "WARNING"
+        Write-SecurityLog "Could not check RDP configuration" "WARNING"
     }
     
     return $Findings
@@ -696,7 +697,7 @@ function Test-NetworkServices {
         }
         
         if ($OpenPorts.Count -gt 0) {
-            Write-SecurityLog "  ! Potentially risky network services detected" "WARNING"
+            Write-SecurityLog "Potentially risky network services detected" "WARNING"
             $Findings += @{
                 Title = "Network Services"
                 Status = "Risky Services Detected"
@@ -705,10 +706,10 @@ function Test-NetworkServices {
                 Recommendation = "Review and disable unnecessary services. Ensure cleartext protocols are replaced with encrypted alternatives."
             }
         } else {
-            Write-SecurityLog "  ✓ No obviously risky network services detected" "SUCCESS"
+            Write-SecurityLog "No obviously risky network services detected" "SUCCESS"
         }
     } catch {
-        Write-SecurityLog "  ! Could not scan network services" "WARNING"
+        Write-SecurityLog "Could not scan network services" "WARNING"
     }
     
     return $Findings
@@ -839,7 +840,7 @@ function New-SecurityReport {
 <body>
     <div class="container">
         <div class="header">
-            <h1>Local Security Assessment Report</h1>
+            <h1>🛡️ Local Security Assessment Report</h1>
             <h2>Server: $($ServerInfo.ComputerName)</h2>
             <div class="timestamp">Generated: $Timestamp</div>
         </div>
@@ -901,7 +902,7 @@ function New-SecurityReport {
                 <h4>$($Finding.Title) <span class="risk-badge $BadgeClass">$($Finding.RiskLevel)</span></h4>
                 <p><strong>Status:</strong> $($Finding.Status)</p>
                 <p><strong>Details:</strong> $($Finding.Details)</p>
-                $(if ($Finding.CVE) { "<div class='cve-alert'><strong>CVE References:</strong> $($Finding.CVE)</div>" } )
+                $(if ($Finding.CVE) { "<div class='cve-alert'><strong>🔓 CVE References:</strong> $($Finding.CVE)</div>" } )
                 $(if ($Finding.Reference) { "<p><strong>Reference:</strong> $($Finding.Reference)</p>" } )
                 <div class="recommendation">
                     <strong>🔧 Recommendation:</strong> $($Finding.Recommendation)
@@ -914,7 +915,7 @@ function New-SecurityReport {
         </div>
         
         <div style="margin: 20px; padding: 15px; background: #f8fdff; border-radius: 6px;">
-            <h3>📈 Assessment Summary</h3>
+            <h3>Assessment Summary</h3>
             <p><strong>Overall Security Posture:</strong> 
                 $(if ($CriticalCount -eq 0 -and $WarningCount -eq 0) {'Excellent - No issues detected'} 
                 elseif ($CriticalCount -eq 0 -and $WarningCount -gt 0) {'Good - Review warnings'} 
