@@ -1,0 +1,10 @@
+Key Security Areas Covered:
+    SMB Protocols - SMBv1, SMB signing
+    PowerShell - v2, execution policy, logging
+    Name Resolution - LLMNR, NetBIOS
+    TLS/SSL - Weak versions, cipher suites
+    Authentication - NTLM, LM compatibility
+    Services - Telnet, FTP, SNMP, WebDAV
+    WinRM - HTTP listeners, configuration
+    RDP - NLA, security settings
+    Network Services - Listening ports and services
