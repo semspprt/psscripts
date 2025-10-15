@@ -8,16 +8,16 @@ The .ps1 file goes to C:\SECURITYSCANNER. After the Scan, the reports are sent t
 Synthax (Quick Reference Card)
 
 # Quick Start
-.\LocalSecurityAssessment.ps1
+.\LocalSecScan.ps1
 
 # Comprehensive Audit
-.\LocalSecurityAssessment.ps1 -ScanScope Comprehensive -ScanNetworkServices -OpenReport
+.\LocalSecScan.ps1 -ScanScope Comprehensive -ScanNetworkServices -OpenReport
 
 # Fast Check
-.\LocalSecurityAssessment.ps1 -ScanScope Quick
+.\LocalSecScan.ps1 -ScanScope Quick
 
 # Custom Location
-.\LocalSecurityAssessment.ps1 -OutputPath "D:\Scans\" -OpenReport
+.\LocalSecScan.ps1 -OutputPath "D:\Scans\" -OpenReport
 
 Exit Code Meanings
     Exit 0: No critical issues (warnings may exist)
