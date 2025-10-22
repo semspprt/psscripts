@@ -1193,6 +1193,11 @@ function New-SecurityReport {
             RiskLevelCritical = "Critical"
             RiskLevelWarning = "Warning"
             RiskLevelOK = "OK"
+            ComprehensiveScan = "Comprehensive Scan"
+            QuickScan = "Quick Scan"
+            Scanned = "Scanned"
+            NotScanned = "Not Scanned"
+            LocalComprehensiveAudit = "Local Comprehensive Security Audit"
         }
         French = @{
             Title = "Rapport d'Audit de Sécurité Local"
@@ -1251,6 +1256,11 @@ function New-SecurityReport {
             RiskLevelCritical = "Critique"
             RiskLevelWarning = "Avertissement"
             RiskLevelOK = "OK"
+            ComprehensiveScan = "Scan Complet"
+            QuickScan = "Scan Rapide"
+            Scanned = "Scanné"
+            NotScanned = "Non Scanné"
+            LocalComprehensiveAudit = "Audit de Sécurité Local Complet"
         }
     }
     
@@ -1368,8 +1378,8 @@ function New-SecurityReport {
         
         <div class="scan-info">
             <h3>$($Text.ScanInfo)</h3>
-            <p><strong>$($Text.Scope):</strong> $ScanScope Scan | <strong>$($Text.NetworkServices):</strong> $(if($ScanNetworkServices){'$($Language)'}else{'Not Scanned'})</p>
-            <p><strong>$($Text.AssessmentType):</strong> Local Comprehensive Security Audit</p>
+            <p><strong>$($Text.Scope):</strong> $(if($ScanScope -eq "Comprehensive"){$Text.ComprehensiveScan}else{$Text.QuickScan}) | <strong>$($Text.NetworkServices):</strong> $(if($ScanNetworkServices){$Text.Scanned}else{$Text.NotScanned})</p>
+            <p><strong>$($Text.AssessmentType):</strong> $($Text.LocalComprehensiveAudit)</p>
         </div>
         
         <div class="server-info">
