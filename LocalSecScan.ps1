@@ -7,7 +7,7 @@
 .NOTES
     Author: EMMANUEL S. M. / Cybersecurity Specialist
     For any improvement or comment : semspprt=#@#=proton.me
-    Version: 1.2 (2025-10-15) - Added multilingual support
+    Version: 1.1 (2025-10-22) - Added multilingual support
 #>
 
 param(
