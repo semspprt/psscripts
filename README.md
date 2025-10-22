@@ -86,8 +86,8 @@ Start-Process PowerShell -Verb RunAs -ArgumentList "-File LocalSecScan.ps1"
 ```
 
 - Rapport non généré :
-    - Vérifier les permissions d'écriture dans ```OutputPath```
-    - Consulter le fichier de log pour les erreurs détaillées
+    - *Vérifier les permissions d'écriture dans ```OutputPath```*
+    - *Consulter le fichier de log pour les erreurs détaillées*
 
 ## 2. Journalisation
 Les logs détaillés sont sauvegardés dans :
