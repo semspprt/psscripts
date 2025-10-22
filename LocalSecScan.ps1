@@ -408,7 +408,24 @@ function Write-SecurityLog {
     }
     
     $Timestamp = Get-Date -Format "HH:mm:ss"
-    $LogMessage = "[$Timestamp] [$Type] $LocalizedMessage"
+    
+    # Localize log level names
+    $LocalizedType = switch ($Language) {
+        "French" {
+            switch ($Type) {
+                "SUCCESS" { "SUCCES" }
+                "WARNING" { "AVERTISSEMENT" }
+                "ERROR" { "ERREUR" }
+                "CRITICAL" { "CRITIQUE" }
+                "INFO" { "INFO" }
+                "DETAIL" { "DETAIL" }
+                default { $Type }
+            }
+        }
+        default { $Type }
+    }
+    
+    $LogMessage = "[$Timestamp] [$LocalizedType] $LocalizedMessage"
     
     switch ($Type) {
         "SUCCESS" { $Color = "Green" }
@@ -1173,6 +1190,9 @@ function New-SecurityReport {
             AddressCriticalAction = "Address critical findings immediately"
             ReviewWarningsAction = "Review and address warnings"
             MaintainConfig = "Maintain current security configuration"
+            RiskLevelCritical = "Critical"
+            RiskLevelWarning = "Warning"
+            RiskLevelOK = "OK"
         }
         French = @{
             Title = "Rapport d'Audit de Sécurité Local"
@@ -1228,6 +1248,9 @@ function New-SecurityReport {
             AddressCriticalAction = "Traitez les problèmes critiques immédiatement"
             ReviewWarningsAction = "Revoyez et traitez les avertissements"
             MaintainConfig = "Maintenez la configuration de sécurité actuelle"
+            RiskLevelCritical = "Critique"
+            RiskLevelWarning = "Avertissement"
+            RiskLevelOK = "OK"
         }
     }
     
@@ -1408,11 +1431,13 @@ function New-SecurityReport {
         $Recommendation = $TextResources[$Language][$Finding.Recommendation]
         
         $FindingClass = "finding-$($Finding.RiskLevel.ToLower())"
+        ####
+        $RiskLevelText = $Text["RiskLevel$($Finding.RiskLevel)"]
         $BadgeClass = "badge-$($Finding.RiskLevel.ToLower())"
         
         $HTML += @"
             <div class="finding $FindingClass">
-                <h4>$Title <span class="risk-badge $BadgeClass">$($Finding.RiskLevel)</span></h4>
+                <h4>$Title <span class="risk-badge $BadgeClass">$RiskLevelText</span></h4>
                 <p><strong>$($Text.Status):</strong> $($Finding.Status)</p>
                 <p><strong>$($Text.Details):</strong> $Details</p>
                 $(if ($Finding.CVE) { "<div class='cve-alert'><strong>🔓 $($Text.CVEReferences):</strong> $($Finding.CVE)</div>" } )
