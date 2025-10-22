@@ -1,4 +1,4 @@
-﻿﻿<#
+﻿<#
 .SYNOPSIS
     Comprehensive Local Security Assessment for Windows Servers
 .DESCRIPTION
